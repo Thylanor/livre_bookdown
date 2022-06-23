@@ -1,11 +1,13 @@
 book_filename: "series"
 language:
   ui:
-    chapter_name: "Chapter "
+    chapter_name: "Partie "
 rmd_files: [
   "index.Rmd",
-  "setup.Rmd",
-  "chapitre_2.Rmd",
-  "chapitre_3.Rmd"]
+  "Monde.Rmd",
+  "Continent.Rmd",
+  "Pays.Rmd",
+  "Cartes_2019.Rmd",
+  "Cartes.Rmd"]
 delete_merged_file: true 
 output_dir: "docs"

@@ -1,6 +1,6 @@
 --- 
-title: "Bookdown template"
-author: "Oswaldo Forey, adapté de Julie Lowndes"
+title: "Bookdown TP Cours R"
+author: "Svetlana et Simon L"
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 # output: bookdown::gitbook
@@ -9,37 +9,34 @@ bibliography: [book.bib, packages.bib]
 biblio-style: apalike
 link-citations: yes
 github-repo: openscapes/series
-description: "A mini bookdown tutorial book on how to make bookdown books."
 ---
 
-# Welcome {#welcome}
+# Introduction {#welcome}
 
-hi
+## Objectifs de la démarche
 
-It's possible to create beautiful books for free using [RStudio's R Markdown](http://rmarkdown.rstudio.com/) and Yihui Xie's [bookdown](https://bookdown.org/yihui/bookdown/) and hosting them on [Github](http://github.com). This is pretty new and incredibly cool. It is a really powerful way to communicate science using the same reproducible workflow you use for your analyses and collaborations.
+Cette page a pour fonction de présenter les données de consommation énergétique, de production de nourriture et la population mondiale selon plusieurs critères.
 
-This tutorial borrows heavily from a lot of great tutorials and resources you should check out too -- there are links throughout. It also parallels a previous tutorial [Making free websites with RStudio’s R Markdown](https://jules32.github.io/rmarkdown-website-tutorial/).
+Nous verrons dans un premier temps les données à l'échelle mondiale afin de visualiser la situation dans son ensemble au cours du temps.
 
-The best way to learn is to follow along with your own laptop, but all are welcome. We'll spend half the time with the tutorial and half the time for you to work on your own website and get help. If you bring your laptop please do this beforehand: 
+Ensuite, nous entrerons dans le détail en ayant une vue continent par continent sur les mêmes éléments selon les années.
 
-1. install [RStudio](https://www.rstudio.com/products/rstudio/download/)
-1. create a [GitHub]((http://github.com)) account ([advice](http://happygitwithr.com/github-acct.html))
-1. set up your computer to talk to GitHub
-    - have RStudio linked directly (highly recommended) ([instructions sections 8-14](http://happygitwithr.com/hello-git.html))
-    - or install the [Desktop App](https://desktop.github.com/)
-    - or be familiar with git commands for the command line ([tutorial](https://try.github.io/levels/1/challenges/1))
+L'application shiny qui suit présentera le détail, pays par pays.
 
-----
+Nous visualiserons ensuite une vue cartographiée de l'année 2019 des totaux de consommation d'énergie, de production de nourriture ainsi que la population.
 
+Enfin, une application shiny permettra de visualiser ces cartes selon l'année sélectionnée par l'utilisateur.
 
-**Examples:**
+## Présentation des données 
 
-We have been using bookdown for the Ocean Health Index:  [**ohi-science.org/data-science-training**](http://ohi-science.org/data-science-training) and Openscapes: [**openscapes.org/series**](https://openscapes.org/series).  
-And R Markdown is much more than books and websites -- here's a [**one-minute video about R Markdown**](http://rmarkdown.rstudio.com/lesson-1.html) to get you excited. 
+Nous avons obtenu nos données des bases de données suivantes:
 
-----
+- Données temporelles de la population mondiale (WPP2019_POP_F01_1_TOTAL_POPULATION_BOTH_SEXES_UN.xls) https://population.un.org/wpp/Download/Standard/Population/ Ce tableau contient les données de la population en millier de millions d’individus. Nous n’utiliserons que la feuille ESTIMATES.
 
-## Learn all about Bookdown
+- Données temporelles de consommation énergétique (owid-energy-data__OWID) https://ourworldindata.org/grapher/global-energy-substitution?country=~OWID_WRL
 
-The best way to learn more about bookdown is from Yihui Xie himself. You can read his book [bookdown: Authoring Books and Technical Documents with R Markdown](https://bookdown.org/yihui/bookdown/) or watch his webinar [introducing bookdown](https://www.rstudio.com/resources/webinars/introducing-bookdown/).
+- Données temporelles de production de nourriture
+(Production_Crops_Livestock_E_All_Data.csv)
+https://www.fao.org/faostat/en/#data/QCL
 
+Les codes iso des pays sont issus du package "countrycode" et les données géographiques des pays sont obtenues via le package "ggthemes"

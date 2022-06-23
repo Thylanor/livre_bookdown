@@ -1,0 +1,42 @@
+# Cartes Choroplèthe année 2019
+
+## Carte mondiale de la consommation d'énergie
+
+```{r}
+
+world_map_data_2019 <-read_delim("world_map_data_2019.csv",delim=";")
+
+ggplot(world_map_data_2019)+
+  aes(long,lat,group=group)+
+  geom_polygon(aes(fill=energy_value),colour="black")+
+  labs(title="Carte de consommation énergétique en 2019")+
+  theme_void()+
+  theme(plot.background = element_rect(fill="#2980B9"))+
+  scale_fill_gradient(high="#1E8449",low="#A2D9CE")
+
+```
+
+## Carte mondiale de la production de nourriture
+
+```{r}
+ggplot(world_map_data_2019)+
+  aes(long,lat,group=group)+
+  geom_polygon(aes(fill=food_value),colour="black")+
+  labs(title="Carte de production de nourriture en 2019")+
+  theme_void()+
+  theme(plot.background = element_rect(fill="#2980B9"))+
+  scale_fill_gradient(high="#B03A2E",low="#FADBD8")
+
+```
+
+## Carte mondiale de la population
+
+```{r}
+ggplot(world_map_data_2019)+
+  aes(long,lat,group=group)+
+  geom_polygon(aes(fill=population),colour="black")+
+  labs(title="Carte de population en 2019")+
+  theme_void()+
+  theme(plot.background = element_rect(fill="#2980B9"))+
+  scale_fill_gradient(high="#6C3483",low="#D7BDE2")
+```

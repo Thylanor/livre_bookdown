@@ -1,0 +1,7 @@
+# Analyse des données par pays
+
+
+```{r}
+knitr::include_app("https://thylanor.shinyapps.io/Graphiques_pays/")
+
+```

@@ -1,0 +1,8 @@
+# Carte de visualisation annuelle
+
+
+```{r}
+knitr::include_app("https://thylanor.shinyapps.io/Cartes_choroplethes/")
+```
+
+

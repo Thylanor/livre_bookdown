@@ -1,0 +1,207 @@
+# Analyse par continent
+
+Cette page présente l'analyse par continent au fur et à mesure des années.
+
+```{r}
+
+knitr::opts_chunk$set(
+	echo = FALSE,
+	fig.path = "Figures/",
+	fig.retina = 3
+)
+
+library(flexdashboard)
+library(tidyverse)
+library(lubridate)
+library(tidyselect)
+library(readxl)
+library(ggthemes)
+library(countrycode)
+library(ggthemes)
+library(gapminder)
+
+
+```
+
+
+```{r}
+energy<-read_delim("owid-energy-data__OWID.csv") |> 
+  select(2,3,ends_with("consumption")) |> 
+  filter(year>=1950) |>
+  select(-5,-8,-12,-13) |> 
+  pivot_longer(cols = c(3:11),
+               names_to = "consumption_source",
+               values_to = "energy_value") |> 
+  mutate(consumption_type=if_else(consumption_source=="coal_consumption"|
+                                    consumption_source=="oil_consumption"|
+                                    consumption_source=="gas_consumption",
+                                  "fossil_fuel_consumption",
+                                  "low_carbon_consumption"),
+         .after=year)
+
+
+
+food<-read_delim("Production_Crops_Livestock_E_All_Data.csv",
+                 locale=locale(encoding = "ISO-8859-1")) |> 
+  select(!ends_with("F")) |> 
+  rename_with(~ str_remove(., "Y"), everything()) |> 
+  filter(str_detect(Item,"Total")|str_detect(Item,"Primary"))|> 
+  pivot_longer(cols=8:67,
+               names_to="year",
+               values_to="food_value") |>  
+  filter(Element=="Production") |> 
+  mutate(year=as.numeric(year)) |> 
+  select(2,4,8,9) |> 
+  mutate(food_value=food_value/1000000)
+
+
+population<-read_excel("WPP2019_POP_F01_1_TOTAL_POPULATION_BOTH_SEXES_UN.xlsx",range="A17:BZ306",na="...") |> 
+  select(1:3,Type,"1950":"2020") |> 
+  pivot_longer(cols=5:75,
+               names_to="year",
+               values_to = "population") |> 
+  mutate(population=population*1000) |> 
+  rename(region=3) |> 
+  mutate(year=as.numeric(year)) |> 
+  select(3,5,6)
+
+
+```
+
+## Consommation d'énergie annuelle par continent et type d'énergie
+
+```{r}
+
+energy_continent<-energy |> 
+  mutate(continent=countrycode(country, origin = "country.name", destination = "continent"),.after=country) |> 
+  drop_na(continent)
+
+ggplot(energy_continent)+
+  aes(year,energy_value,fill=consumption_type)+
+  geom_col()+
+  facet_grid(~continent)+
+  labs(title="Consommation annuelle par continent par type d'énergie",x="Année",y="Consommation en ?")+
+  scale_x_continuous(limits=c(1965,2020),
+                     breaks=seq(1960,2020,20))+
+  theme_dark()+
+  theme(axis.text.x=element_text(size=8,
+                                 angle=45,
+                                 hjust=1,
+                                 vjust=1))
+  
+
+
+```
+
+## Consommation d'énergie annuelle par continent et source d'énergie (énergie fossile)
+
+```{r}
+
+energy_continent |> 
+  filter(consumption_type=="fossil_fuel_consumption") |> 
+  ggplot()+
+  aes(year,energy_value,fill=consumption_source)+
+  geom_col()+
+  facet_grid(~continent)+
+  labs(title="Consommation annuelle mondiale par source d'énergie",x="Année",y="Consommation en ?")+
+  scale_x_continuous(limits=c(1965,2020),
+                     breaks=seq(1960,2020,20))+
+  theme_dark()+
+  theme(axis.text.x=element_text(size=8,
+                                 angle=45,
+                                 hjust=1,
+                                 vjust=1))
+  
+
+```
+
+## Consommation d'énergie annuelle par continent et source d'énergie (énergie à faible émission de CO2)
+
+```{r}
+
+energy_continent |> 
+  filter(consumption_type=="low_carbon_consumption") |> 
+  ggplot()+
+  aes(year,energy_value,fill=consumption_source)+
+  geom_col()+
+  facet_grid(~continent)+
+  labs(title="Consommation annuelle mondiale par source d'énergie",x="Année",y="Consommation en ?")+
+  scale_x_continuous(limits=c(1965,2020),
+                     breaks=seq(1960,2020,20))+
+  theme_dark()+
+  theme(axis.text.x=element_text(size=8,
+                                 angle=45,
+                                 hjust=1,
+                                 vjust=1))
+  
+
+```
+
+
+## Production annuelle de nourriture par continent
+
+```{r}
+
+food_continent<-food |> 
+  filter(Area == "Africa"|Area=="Americas"|Area=="Asia"|Area=="Europe"|Area=="Oceania")
+  
+# mutate(continent=countrycode(Area, origin = "country.name", destination = "continent"),.after=Area) |> 
+#   drop_na(continent)
+
+ggplot(food_continent)+
+  aes(year,food_value,fill=Item)+
+  geom_col()+
+  facet_grid(~Area)+
+  labs(title="Production annuelle mondiale par type d'aliment",x="Année",y="Production de nourriture (Mt)")+
+  scale_x_continuous(limits=c(1960,2020),
+                     breaks=seq(1960,2020,20))+
+  scale_y_continuous(limits=c(0,5000),
+                     breaks=seq(0,5000,500))+
+  theme_dark()+
+  theme(axis.text.x=element_text(size=8,
+                                 angle=45,
+                                 hjust=1,
+                                 vjust=1))
+  
+  
+```
+
+
+## Evolution de la population annuelle par continent
+
+```{r}
+population_continent<-population |> 
+  filter(region=="Northern America"|
+                          region=="Latin America and the Caribbean"|
+                          region=="Africa"|
+                          region=="Europe"|
+                          region=="Asia"|
+                          region=="Oceania") |> 
+  mutate(region=case_when(region=="Northern America"~"Americas",
+                          region=="Latin America and the Caribbean"~"Americas",
+                          region=="Africa"~"Africa",
+                          region=="Europe"~"Europe",
+                          region=="Asia"~"Asia",
+                          region=="Oceania"~"Oceania"))
+
+
+ggplot(population_continent)+
+  aes(year,population,fill=region)+
+  geom_col(show.legend = FALSE)+
+  facet_grid(~region)+
+    labs(title="Evolution de la population mondiale annuelle",x="Année",y="Population")+
+     scale_x_continuous(limits=c(1950,2020),
+                     breaks=seq(1950,2020,20))+
+    scale_y_continuous(limits=c(0,5000000000),
+                     breaks=seq(0,5000000000,1000000000),
+                     labels=function(x) {
+    format(x,scientific=FALSE,big.mark=" ")
+  })+
+  theme_dark()+
+  theme(axis.text.x=element_text(size=8,
+                                 angle=45,
+                                 hjust=1,
+                                 vjust=1))
+  
+  
+```
